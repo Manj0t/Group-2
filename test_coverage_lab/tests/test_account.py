@@ -126,9 +126,13 @@ def test_positive_deposit():
     account.deposit(2 ** 32)
     assert account.balance == (2 ** 32) + 1
 
-    # Depositing float increases balance accordingly.
+    # Depositing small positive float increases balance accordingly.
     account.deposit(1.982)
     assert account.balance == (2 ** 32) + 1 + 1.982
+
+    # Depositing small positive float increases balance accordingly.
+    account.deposit(2 ** 32.1)
+    assert account.balance == (2 ** 32) + 1 + 1.982 + (2 ** 32.1)
     
 
 # Student 5: Test deposit with zero/negative values
