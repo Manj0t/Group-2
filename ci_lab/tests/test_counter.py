@@ -154,7 +154,7 @@ class TestCounterEndpoints:
         assert min(response.get_json().values()) == 0
 
         # TODO: Add an assertion to check that 'b' is indeed in the response
-        assert 'b' in response.get_json()
+        assert "b" in response.get_json()
 
     # ===========================
     # Test: Set a counter to a specific value

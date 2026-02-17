@@ -9,7 +9,11 @@ git_token = "FAKE_TOKEN"
 owner = "scottyab"
 repo = "rootbeer"
 
-headers = {'Authorization': f"Bearer {git_token}", }
+headers = {
+    "Authorization": f"Bearer {git_token}",
+}
+
+
 # -----
 # HELPERS
 # ------
@@ -25,12 +29,11 @@ def get_commits(file_path):
             f"?path={file_path}&per_page=100&page={page}"
         )
 
-        request_result = requests.get(url, headers = headers)
+        request_result = requests.get(url, headers=headers)
         # 200, request accepted
         if request_result.status_code != 200:
             break
 
-        
         commits = request_result.json()
         # empty list, paging is finished
         if not commits:
@@ -43,7 +46,7 @@ def get_commits(file_path):
             else:
                 author = commit["commit"]["author"]["name"]
 
-            # Extract date 
+            # Extract date
             date = commit["commit"]["author"]["date"][:10]
 
             commit_results.append((file_path, author, date))
@@ -52,9 +55,11 @@ def get_commits(file_path):
 
     return commit_results
 
+
 # ------
 # MAIN
 # ------
+
 
 def main():
     input_csv = "data/file_rootbeer.csv"
@@ -87,10 +92,6 @@ def main():
 
     print(f"Output written to {output_csv}")
 
+
 if __name__ == "__main__":
     main()
-
-    
-
-
-

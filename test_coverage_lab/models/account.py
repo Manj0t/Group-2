@@ -9,12 +9,15 @@ import re
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db
 
+
 class DataValidationError(Exception):
     """Used for data validation errors"""
+
     pass
 
+
 class Account(db.Model):
-    """ Represents an Account in the system """
+    """Represents an Account in the system"""
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
@@ -39,7 +42,7 @@ class Account(db.Model):
             "disabled": self.disabled,
             "date_joined": self.date_joined,
             "balance": self.balance,
-            "role": self.role
+            "role": self.role,
         }
 
     def validate_email(self):
@@ -81,7 +84,7 @@ class Account(db.Model):
         if new_role not in ["user", "admin"]:
             raise DataValidationError("Invalid role")
         self.role = new_role
-    
+
     def deactivate(self):
         """Deactivates the account"""
         self.disabled = True
@@ -94,4 +97,3 @@ class Account(db.Model):
         """Deletes the account from the database"""
         db.session.delete(self)
         db.session.commit()
-

@@ -26,11 +26,7 @@ def create_counter(name):
     if not is_valid_counter_name(name):
         error_msg = "Invalid counter name. Only alphanumeric and underscores allowed."
         return (
-            jsonify(
-                {
-                    "error": error_msg
-                }
-            ),
+            jsonify({"error": error_msg}),
             HTTPStatus.BAD_REQUEST,
         )
     if name in COUNTERS:

@@ -1,6 +1,7 @@
 """
 Test Cases for Account Model
 """
+
 import json
 from random import randrange
 import pytest
@@ -9,17 +10,19 @@ from models.account import Account, DataValidationError
 
 ACCOUNT_DATA = {}
 
+
 @pytest.fixture(scope="module", autouse=True)
 def load_account_data():
-    """ Load data needed by tests """
+    """Load data needed by tests"""
     global ACCOUNT_DATA
-    with open('tests/fixtures/account_data.json') as json_data:
+    with open("tests/fixtures/account_data.json") as json_data:
         ACCOUNT_DATA = json.load(json_data)
 
     # Set up the database tables
     db.create_all()
     yield
     db.session.close()
+
 
 @pytest.fixture
 def setup_account():
@@ -29,13 +32,15 @@ def setup_account():
     db.session.commit()
     return account
 
+
 @pytest.fixture(scope="function", autouse=True)
 def setup_and_teardown():
-    """ Truncate the tables and set up for each test """
+    """Truncate the tables and set up for each test"""
     db.session.query(Account).delete()
     db.session.commit()
     yield
     db.session.remove()
+
 
 ######################################################################
 #  E X A M P L E   T E S T   C A S E
@@ -52,6 +57,7 @@ def setup_and_teardown():
 # Description: Ensure roles can be assigned and checked.
 # ===========================
 
+
 def test_account_role_assignment():
     """Test assigning roles to an account"""
     account = Account(name="John Doe", email="johndoe@example.com", role="user")
@@ -63,12 +69,14 @@ def test_account_role_assignment():
     account.change_role("admin")
     assert account.role == "admin"
 
+
 # ===========================
 # Test: Invalid Role Assignment
 # Author: John Businge
 # Date: 2025-01-30
 # Description: Ensure invalid roles raise a DataValidationError.
 # ===========================
+
 
 def test_invalid_role_assignment():
     """Test assigning an invalid role"""
@@ -94,6 +102,7 @@ Each test should include:
 """
 
 # Test Assignments
+
 
 # ===========================
 # Test: Account Serialization
@@ -131,6 +140,7 @@ def test_account_serialization():
         "role": "user",
     }
 
+
 # Student 2: Test invalid email input
 # - Ensure invalid email formats raise a validation error.
 # Target Method: validate_email()
@@ -138,6 +148,7 @@ def test_account_serialization():
 # Student 3: Test missing required fields
 # - Ensure account initialization fails when required fields are missing.
 # Target Method: Account() initialization
+
 
 # ===========================
 # Test: Test Positive Deposit
@@ -147,23 +158,26 @@ def test_account_serialization():
 # ===========================
 def test_positive_deposit():
 
-    account = Account(name="Gorilla Sushi", email="gorillasushi@gmail.com", role="user", balance = 0)
-    
+    account = Account(
+        name="Gorilla Sushi", email="gorillasushi@gmail.com", role="user", balance=0
+    )
+
     # Depositing small positive integer increases balance accordingly.
     account.deposit(1)
     assert account.balance == 1
 
     # Depositing large positive integer increases balance accordingly.
-    account.deposit(2 ** 32)
-    assert account.balance == (2 ** 32) + 1
+    account.deposit(2**32)
+    assert account.balance == (2**32) + 1
 
     # Depositing small positive float increases balance accordingly.
     account.deposit(1.982)
-    assert account.balance == (2 ** 32) + 1 + 1.982
+    assert account.balance == (2**32) + 1 + 1.982
 
     # Depositing small positive float increases balance accordingly.
-    account.deposit(2 ** 32.1)
-    assert account.balance == (2 ** 32) + 1 + 1.982 + (2 ** 32.1)
+    account.deposit(2**32.1)
+    assert account.balance == (2**32) + 1 + 1.982 + (2**32.1)
+
 
 # Student 5: Test deposit with zero/negative values
 # - Ensure zero or negative deposits are rejected.

@@ -2,13 +2,15 @@ import json
 import requests
 import csv
 import os
+
 if not os.path.exists("data"):
     os.makedirs("data")
 
+
 class Commit:
     def __init__(self, number, date, name, login, touched_files):
-        self.number = number  
-        self.date = date  
+        self.number = number
+        self.date = date
         self.name = name
         self.login = login
         self.touched_files = touched_files
@@ -20,11 +22,13 @@ class Commit:
         print(f"Author Login: {self.login}")
         print(f"Touched Source Files: {self.touched_files}")
 
+
 class SourceFile:
     def __init__(self, date, name, login):
-        self.date = date  
+        self.date = date
         self.name = name
         self.login = login
+
 
 # All source files begin with the paths below.
 javasrc = "rootbeerlib/src/main/java"
@@ -35,12 +39,13 @@ srcfiles = [javasrc, cppsrc, ktsrc]
 # List of Commit objects.
 allCommits = []
 
+
 # GitHub Authentication function
 def github_auth(url, lsttoken, ct):
     jsonData = None
     try:
         ct = ct % len(lstTokens)
-        headers = {'Authorization': 'Bearer {}'.format(lsttoken[ct])}
+        headers = {"Authorization": "Bearer {}".format(lsttoken[ct])}
         request = requests.get(url, headers=headers)
         jsonData = json.loads(request.content)
         ct += 1
@@ -48,6 +53,7 @@ def github_auth(url, lsttoken, ct):
         pass
         print(e)
     return jsonData, ct
+
 
 # @dictFiles, empty dictionary of files
 # @lstTokens, GitHub authentication tokens
@@ -61,7 +67,13 @@ def countfiles(dictfiles, lsttokens, repo):
         # loop though all the commit pages until the last returned empty page
         while True:
             spage = str(ipage)
-            commitsUrl = 'https://api.github.com/repos/' + repo + '/commits?page=' + spage + '&per_page=100'
+            commitsUrl = (
+                "https://api.github.com/repos/"
+                + repo
+                + "/commits?page="
+                + spage
+                + "&per_page=100"
+            )
 
             jsonCommits, ct = github_auth(commitsUrl, lsttokens, ct)
 
@@ -71,35 +83,35 @@ def countfiles(dictfiles, lsttokens, repo):
             # iterate through the list of commits in spage
             for shaObject in jsonCommits:
                 itr = itr + 1
-                sha = shaObject['sha']
+                sha = shaObject["sha"]
                 # For each commit, use the GitHub commit API to extract the files touched by the commit
-                shaUrl = 'https://api.github.com/repos/' + repo + '/commits/' + sha
+                shaUrl = "https://api.github.com/repos/" + repo + "/commits/" + sha
                 shaDetails, ct = github_auth(shaUrl, lsttokens, ct)
-        
+
                 try:
-                    name = shaDetails['commit']['author']['name']
+                    name = shaDetails["commit"]["author"]["name"]
                 except:
                     name = ""
                 try:
-                    login = shaDetails['author']['login']
+                    login = shaDetails["author"]["login"]
                 except:
                     login = ""
                 try:
-                    date = shaDetails['commit']['author']['date']
+                    date = shaDetails["commit"]["author"]["date"]
                 except:
                     date = ""
 
                 touched_files = []
 
-                filesjson = shaDetails['files']
+                filesjson = shaDetails["files"]
                 for filenameObj in filesjson:
-                    filename = filenameObj['filename']
+                    filename = filenameObj["filename"]
                     for srcfile in srcfiles:
                         if filename.startswith(srcfile):
                             touched_files.append(filename)
                             dictfiles[filename] = dictfiles.get(filename, 0) + 1
                             break
-                
+
                 print(touched_files)
                 commit = Commit(itr, date, name, login, touched_files)
                 allCommits.append(commit)
@@ -109,7 +121,8 @@ def countfiles(dictfiles, lsttokens, repo):
         print("Error receiving data")
         exit(0)
 
-repo = 'scottyab/rootbeer'
+
+repo = "scottyab/rootbeer"
 # repo = 'Skyscanner/backpack' # This repo is commit heavy. It takes long to finish executing
 # repo = 'k9mail/k-9' # This repo is commit heavy. It takes long to finish executing
 # repo = 'mendhak/gpslogger'
@@ -118,15 +131,14 @@ lstTokens = [""]
 
 dictfiles = dict()
 countfiles(dictfiles, lstTokens, repo)
-print('Total number of files: ' + str(len(dictfiles)))
+print("Total number of files: " + str(len(dictfiles)))
 
 touch_history = []
 for commit in allCommits:
     for srcfile in commit.touched_files:
         touch_history.append([srcfile, commit.date, commit.name, commit.login])
 
-with open('data/Reece_authorFileTouches.csv', 'w', newline = '') as csvfile:
+with open("data/Reece_authorFileTouches.csv", "w", newline="") as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["file", "date", "name", "login"])
     writer.writerows(touch_history)
-

@@ -5,7 +5,6 @@ from datetime import date, datetime as dt
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-
 # GitHub repo
 repo = "scottyab/rootbeer"
 

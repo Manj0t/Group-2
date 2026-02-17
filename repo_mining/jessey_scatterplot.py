@@ -11,21 +11,23 @@ input_csv = "author_file_touches.csv"
 output_plot = "author_file_scatterplot.png"
 
 # ---
-# LOAD DATA 
+# LOAD DATA
 # ----
 records = []
 with open(input_csv, newline="", encoding="utf-8") as f:
     reader = csv.DictReader(f)
     for row in reader:
-        records.append({
-            "file": row["file"],
-            "author": row["author"],
-            "date": datetime.strptime(row["date"], "%Y-%m-%d")
-        })
+        records.append(
+            {
+                "file": row["file"],
+                "author": row["author"],
+                "date": datetime.strptime(row["date"], "%Y-%m-%d"),
+            }
+        )
 
-# compute weeks from date and time 
+# compute weeks from date and time
 # calc the start date from the earliest commit
-start= min(r["date"] for r in records)
+start = min(r["date"] for r in records)
 for r in records:
     r["week"] = (r["date"] - start).days // 7
 
@@ -40,13 +42,10 @@ for r in records:
 # ---
 # PLOT
 # -----
-plt.figure(figsize=(14,8))
+plt.figure(figsize=(14, 8))
 
 for author, points in author_plotpoints.items():
-    plt.scatter(
-        points["x"], points["y"],
-        s=25, alpha=0.75, label=author
-    )
+    plt.scatter(points["x"], points["y"], s=25, alpha=0.75, label=author)
 
 plt.yticks(range(len(files)))
 plt.ylabel("File")
