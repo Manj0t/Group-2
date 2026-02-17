@@ -10,6 +10,7 @@ how to call the web service and assert what it should return.
 - Duplicate names must return a conflict error code.
 - The service must be able to update a counter by name.
 - The service must be able to read the counter
+- THIS LINE IS TOO LONG AND WILL FAIL Flake8 check. Must come back and remove this line or else it will never pass.
 """
 
 import pytest
